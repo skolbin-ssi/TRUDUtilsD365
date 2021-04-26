@@ -35,6 +35,7 @@ It also allow you to follow naming conventions. The following standard is propos
 | Table CustTable             | [ExtensionOf(tablestr(CustTable))]<br/>final class CustTableTST_Extension |
 | View AssetBalances          | [ExtensionOf(viewstr(AssetBalances))]<br/>final class AssetBalancesTST_Extension |
 | DataEntity AccountantEntity | [ExtensionOf(dataentityviewstr(AccountantEntity))]<br/>final class AccountantEntityTST_Extension |
+| Map CustVendTable           | [ExtensionOf(mapstr(CustVendTable))]<br/>final class CustVendTableTST_Extension |
 | Form CustTable              | [ExtensionOf(formstr(CustTable))]<br/>final class CustTableFormTST_Extension |
 | Form data source            | [ExtensionOf(formdatasourcestr(CustTable, DataSource1))]<br/>final class CustTableFormTST_DataSource1_Extension |
 | Form data fields            | [ExtensionOf(formdatafieldstr(CustTable, DataSource1, Field1))]<br/>final class CustTableFormTST_DataSource1Field1_Extension |
@@ -141,6 +142,8 @@ Supports the following properties:
 * Groups
 * Label and Help text override
 
+Also can generate a code template for Data provider and [Controller](https://denistrunin.com/d365utils-generatedp/) 
+
 ![1547085113848](assets/DataContractBuilder.png)
 
 ## Create find method
@@ -202,6 +205,38 @@ Another option (this will run a new instance of VS)
 * Run the project
 
 ## Installation
+
+### Using Power Shell
+
+```powershell
+$repo = "TrudAX/TRUDUtilsD365"
+$releases = "https://api.github.com/repos/$repo/releases"
+$path = "C:\AAA"
+
+If(!(test-path $path))
+{
+    New-Item -ItemType Directory -Force -Path $path
+}
+cd $path
+
+Write-Host Determining latest release
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$tag = (Invoke-WebRequest -Uri $releases -UseBasicParsing | ConvertFrom-Json)[0].tag_name
+
+$files = @("InstallToVS.exe",  "TRUDUtilsD365.dll",  "TRUDUtilsD365.pdb")
+
+Write-Host Downloading files
+foreach ($file in $files) 
+{
+    $download = "https://github.com/$repo/releases/download/$tag/$file"
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest $download -Out $file
+    Unblock-File $file
+}
+Start-Process "InstallToVS.exe" -Verb runAs
+```
+
+### Manual installation
 
 Download all 3 files from the [Releases](https://github.com/TrudAX/TRUDUtilsD365/releases). Unblock .dll and .exe files(via the file Properties). Run **InstallToVS.exe**(Run as Administrator). It will copy **TRUDUtilsD365.dll** and **TRUDUtilsD365.pdb** to the VS AddinExtensions folders.
 
